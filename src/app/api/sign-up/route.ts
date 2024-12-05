@@ -7,15 +7,16 @@ export async function POST(request:Request){
     try{
         await dbConnect();
         const {username,password,email} =await request.json();
+        const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
         const existingUserVerifiedByUsername = await UserModel.findOne({
             username,
             isVerified:true
         });
 
         if(existingUserVerifiedByUsername){
-            Response.json({
+            return Response.json({
                 success:false,
-                message:"User is Alreday signed up"
+                message:"User is Already signed up and verified"
             },{
                 status:400
             })
@@ -33,8 +34,8 @@ export async function POST(request:Request){
             const expiryDate =new Date();
             expiryDate.setHours(expiryDate.getHours()+1);
             existingUserByEmail.verifyCodeExpiry = expiryDate;
-
-            existingUserByEmail.verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            existingUserByEmail.verifyCode = verifyCode;
 
             await existingUserByEmail.save();
         }
@@ -42,7 +43,7 @@ export async function POST(request:Request){
             const hashedPassword =await bcrypt.hash(password,10);
             const expiryDate =new Date();
             expiryDate.setHours(expiryDate.getHours()+1);
-            const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+            
 
             
             const newUser = new UserModel({
@@ -59,6 +60,7 @@ export async function POST(request:Request){
         }
 
         //send Verification Email
+        
         const emailResponse = await sendVerificationEmail(email,verifyCode,username);
         if(!emailResponse.success){
             return Response.json({
