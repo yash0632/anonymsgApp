@@ -43,7 +43,7 @@ export async function GET(){
                 }
             }
 
-        ])
+        ]).exec();
         if (!user || user.length === 0) {
             return Response.json(
               { message: 'User not found', success: false },
