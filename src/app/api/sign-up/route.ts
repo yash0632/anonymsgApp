@@ -15,8 +15,8 @@ export async function POST(request:Request){
 
         if(existingUserVerifiedByUsername){
             return Response.json({
-                success:false,
-                message:"User is Already signed up and verified"
+                Success:false,
+                Message:"User is Already signed up and verified"
             },{
                 status:400
             })
@@ -26,10 +26,11 @@ export async function POST(request:Request){
             //todo
             if(existingUserByEmail.isVerified){
                 return Response.json({
-                    success:false,
-                    message:"User already exists with this email"
-                })
+                    Success:false,
+                    Message:"User already exists with this email"
+                },{status:200})
             }
+            existingUserByEmail.username = username;
             existingUserByEmail.password =await bcrypt.hash(password,10);
             const expiryDate =new Date();
             expiryDate.setHours(expiryDate.getHours()+1);
@@ -43,8 +44,6 @@ export async function POST(request:Request){
             const hashedPassword =await bcrypt.hash(password,10);
             const expiryDate =new Date();
             expiryDate.setHours(expiryDate.getHours()+1);
-            
-
             
             const newUser = new UserModel({
                 username,
@@ -62,22 +61,22 @@ export async function POST(request:Request){
         //send Verification Email
         
         const emailResponse = await sendVerificationEmail(email,verifyCode,username);
-        if(!emailResponse.success){
+        if(!emailResponse.Success){
             return Response.json({
-                success:false,
-                message:emailResponse.message
+                Success:false,
+                Message:emailResponse.Error
             },{status:201})
         }
         return Response.json({
-            success:true,
-            message:"user Registered Successfully! Please Verify Your Email!"
+            Success:true,
+            Message:"user Registered Successfully! Please Verify Your Email!"
         })
         
     }
     catch(err){
         return Response.json({
-            success:false,
-            message:'Error Registering User'
+            Success:false,
+            Error:'Error Registering User'
         })
     }
 }

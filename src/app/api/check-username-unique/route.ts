@@ -29,8 +29,7 @@ export async function GET(request:Request){
 
         //check is username is unique;
         const verifiedUserWithUrlUsername = await UserModel.findOne({
-            username:queryParams.username,
-            isVerified:true
+            username:queryParams.username
         })
         
         if(verifiedUserWithUrlUsername != null){
