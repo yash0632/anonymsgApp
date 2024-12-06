@@ -17,12 +17,13 @@ export async function GET(request:Request){
         const queryParams = {
             username:searchParams.get("username")
         }
-
+        
         const queryParamsCheck = queryParamsSchema.safeParse(queryParams);
         if(!queryParamsCheck.success){
-            console.log(queryParamsCheck);
+            console.log(queryParamsCheck.error.issues[0].message);
             return Response.json({
-                ErrorMessage:queryParamsCheck.error.message
+                Success:false,
+                Message:queryParamsCheck.error.issues[0].message
             },{status:405})
         }
 
@@ -31,18 +32,23 @@ export async function GET(request:Request){
             username:queryParams.username,
             isVerified:true
         })
+        
         if(verifiedUserWithUrlUsername != null){
+            
             return Response.json({
-                Message:"Given Username is Already Present"
+                Success:false,
+                Message:"Username is Already Present"
             },{status:405})
         }
 
         return Response.json({
+            Success:true,
             Message:"Username is Unique"
         },{status:200})
     }
     catch(err){
         return Response.json({
+            Success:false,
             Error:"Interal Server Error"
         },{status:400})
     }
