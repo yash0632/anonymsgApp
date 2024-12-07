@@ -14,14 +14,15 @@ export async function POST(request:Request){
         const verifySchemaCheck = verifySchema.safeParse(body);
         if(!verifySchemaCheck.success){
             return Response.json({
-                Error:"Input Schema is not correct",
-                ErrorMsg:verifySchemaCheck.error.message
+                Success:false,
+                Message:verifySchemaCheck.error.message
             },{status:500})
         }
         const user = await UserModel.findOne({username:body.username});
         if(user == null){
             return Response.json({
-                Error:"User With given Username is not present"
+                Success:false,
+                Message:"User With given Username is not present"
             },{status:405})
         }
 
@@ -30,7 +31,7 @@ export async function POST(request:Request){
         if(!checkOtpCode){
             return Response.json({
                 Success:false,
-                Error:"Given Otp is not Correct"
+                Message:"Given Otp is not Correct"
             },
             {
                 status:401
@@ -41,7 +42,7 @@ export async function POST(request:Request){
         if(checkOtpCode && isCodeNotExpired){
             user.isVerified = true;
             await user.save();
-
+            console.log("code here")
             return Response.json({
                 Success:true,
                 Message:"User Verified Successfully"
@@ -52,15 +53,15 @@ export async function POST(request:Request){
         else{
             return Response.json({
                 Success:false,
-                Error:"Otp Expired.Please Sign Up again to get a new Code"
+                Message:"Otp Expired.Please Sign Up again to get a new Code"
             })
         }
         
     }
     catch(err){
         return Response.json({
+            Success:false,
             Error:"Internal Server Error",
-            Message:"Error Verifying User"
         },{status:500})
     }
     

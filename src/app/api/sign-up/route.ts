@@ -28,7 +28,7 @@ export async function POST(request:Request){
                 return Response.json({
                     Success:false,
                     Message:"User already exists with this email"
-                },{status:200})
+                },{status:400})
             }
             existingUserByEmail.username = username;
             existingUserByEmail.password =await bcrypt.hash(password,10);
@@ -59,25 +59,25 @@ export async function POST(request:Request){
         }
 
         //send Verification Email
-        
+        console.log("sending verification email 1")
         const emailResponse = await sendVerificationEmail(email,verifyCode,username);
         if(!emailResponse.Success){
             return Response.json({
                 Success:false,
                 Message:emailResponse.Error
-            },{status:201})
+            },{status:403})
         }
         return Response.json({
             Success:true,
             Message:"user Registered Successfully! Please Verify Your Email!"
-        })
+        },{status:200})
         
     }
     catch(err){
         return Response.json({
             Success:false,
-            Error:'Error Registering User'
-        })
+            Message:'Error Registering User'
+        },{status:400})
     }
 }
 

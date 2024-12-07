@@ -13,6 +13,9 @@ import {LassoSelect, Loader2} from 'lucide-react'
 
 import{ useDebounce} from '@uidotdev/usehooks'
 import Link from 'next/link'
+import {useRouter } from 'next/navigation'
+import { useToast } from '@/hooks/use-toast'
+import { ApiResponse } from '@/types/api_response'
 
 const SignUpPage = () => {
   const [username,setUsername] = useState('');
@@ -20,6 +23,8 @@ const SignUpPage = () => {
   const [isSubmitting,setIsSubmitting] = useState(false);
 
   const debouncedUsername = useDebounce(username,1000);
+  const router = useRouter();
+  const {toast} = useToast();
   
 
 
@@ -92,22 +97,25 @@ const SignUpPage = () => {
         email:values.email,
         password:values.password
       })
-      if(response.data.Success==true){
-        alert(response.data.Message)
-      }
-      else{
-        alert(response.data.Error)
-      }
+      
+        toast({
+          title:response.data.Message
+        })
+      
+      
       
     }
     catch(err){
       console.log(err);
-      const error = err as AxiosError;
-      console.log(error.response?.data)
+      const error = err as AxiosError<ApiResponse>;
+      toast({
+        title:error.response?.data?.Message
+      })
       
     }
     finally{
       setIsSubmitting(false);
+      router.replace(`/verify/${values.username}`)
     }
 
 
