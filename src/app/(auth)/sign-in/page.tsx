@@ -13,10 +13,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import axios from 'axios'
+import {useSession,signIn,signOut} from 'next-auth/react'
+import {useRouter} from 'next/navigation'
+import {useToast} from '@/hooks/use-toast'
 
 const SignInPage = () => {
   const [password, setPassword] = useState<string>();
   const [passwordType, setPasswordType] = useState<"password" | "text">("password");
+  const session = useSession();
+  const router = useRouter();
+  const {toast} = useToast();
+
+  if(session && session.user){
+    router.replace(`/dashboard`)
+  }
 
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -26,13 +37,28 @@ const SignInPage = () => {
     },
   });
 
-  async function onSubmit(data: z.infer<typeof signInSchema>) {
-    try{
+  function onSubmit(data:z.infer<typeof signInSchema>) {
+    console.log(data)
+    
+      //@ts-ignore
+      
+      signIn('credentials',{redirect:false ,password:data.password,identifier:data.identifier}).then((res)=>{
+        console.log(res);
+        if(res?.ok){
+          toast:({
+            title:"signed In Successfully"
+          })
+        }
+        else if (res?.error){
+          toast:({
+            title:res.error
+          })
+        }
+      })
+      
 
-    }
-    catch(err){
-
-    }
+    
+    
   }
   return (
     <div className="w-full min-h-screen flex justify-center">
@@ -57,7 +83,7 @@ const SignInPage = () => {
                       </FormControl>
                     </FormItem>
                   )}
-                ></FormField>
+                />
                 <FormField
                   control={form.control}
                   name="password"
@@ -66,7 +92,11 @@ const SignInPage = () => {
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <div className="flex p-2 border-[0.5px] border-solid border-black border-opacity-10 rounded-md focus-within:outline-2 focus-within:outline-solid focus-within:outline-black focus-within:rounded-md focus:border-opacity-100" >
-                          <input placeholder="password" className="focus-visible:outline-none focus-visible:border-none placeholder:text-muted-foreground placeholder:text-sm" type={passwordType} onChange={(e)=>{
+                          <input 
+                          placeholder="password" className="focus-visible:outline-none focus-visible:border-none placeholder:text-muted-foreground placeholder:text-sm" 
+                          type={passwordType}
+                          {...field} 
+                          onChange={(e)=>{
                             field.onChange(e)
                             setPassword(e.target.value)
                           }} />
@@ -78,8 +108,8 @@ const SignInPage = () => {
                       </FormControl>
                     </FormItem>
                   )}
-                ></FormField>
-                <Button>
+                />
+                <Button type="submit">
                   Sign In
                 </Button>
               </form>

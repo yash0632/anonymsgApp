@@ -22,28 +22,32 @@ export const authOptions:NextAuthOptions ={
             },
             //@ts-ignore
             async authorize(credentials:any){
-                console.log(credentials);
+                console.log("credentials:",credentials);
                 await dbConnect();
                 try{
                     const user = await UserModel.findOne({
                         $or:[
-                            {email:credentials.email},
-                            {username:credentials.email}
+                            {email:credentials.identifier},
+                            {username:credentials.identifier}
                         ]
                     })
     
                     if(!user){
+                        console.log("error")
                         throw new Error("User with given Email not Present")
+                        
                     }
     
                     const checkPassword = bcrypt.compare(credentials.password,user.password);
                     if(!checkPassword){
                         throw new Error("Password is not Correct!")
+                        
                     }
                     return user;
                 }
                 catch(err:any){
-                    throw new Error(err)
+                    throw new Error(err?.message ?? "Oops, something went wrong!")
+                    
                 }
                 
             }
@@ -52,12 +56,14 @@ export const authOptions:NextAuthOptions ={
     ],
     
     callbacks: {
+        
         async jwt({ token, user}) {
             
             if(user){
+                console.log(user);
                 token.username = user.username;
                 token.email = user.email
-                token._id = user._id.toString();
+                token._id = user._id;
             }
             
             
@@ -79,5 +85,8 @@ export const authOptions:NextAuthOptions ={
     session:{
         strategy:"jwt"
     },
+    pages:{
+        signIn:"/sign-in"
+    }
     
 }
