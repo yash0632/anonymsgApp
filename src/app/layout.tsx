@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/components/authProvider";
 import {Toaster} from '@/components/ui/toaster'
+import NavPageComponent from "@/components/NavPageComponent";
 
 
 export default function RootLayout({
@@ -15,7 +16,9 @@ export default function RootLayout({
       
       <AuthProvider>
       <body>
-        {children}
+        <NavPageComponent>
+          {children}
+        </NavPageComponent>
         <Toaster/>
       </body>
       </AuthProvider>

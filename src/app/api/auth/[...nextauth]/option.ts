@@ -3,6 +3,8 @@ import  CredentialsProvider  from 'next-auth/providers/credentials'
 import UserModel from '@/model/User'
 import bcrypt from 'bcryptjs'
 import { dbConnect } from '@/lib/dbConnect'
+import GoogleProvider from "next-auth/providers/google";
+
 
 export const authOptions:NextAuthOptions ={
     providers:[
@@ -33,24 +35,28 @@ export const authOptions:NextAuthOptions ={
                     })
     
                     if(!user){
-                        console.log("error")
                         throw new Error("User with given Email not Present")
-                        
                     }
-    
-                    const checkPassword = bcrypt.compare(credentials.password,user.password);
+                    console.log("user:",user);
+                    const checkPassword =await bcrypt.compare(credentials.password,user.password);
+
                     if(!checkPassword){
                         throw new Error("Password is not Correct!")
-                        
                     }
+
                     return user;
                 }
-                catch(err:any){
-                    throw new Error(err?.message ?? "Oops, something went wrong!")
+                catch(error:any){
+                    console.log("errorMessage:",error.message)  
+                    throw new Error(error.message)
                     
                 }
                 
             }
+        }),
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID || "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || ""
         })
         
     ],
@@ -60,10 +66,10 @@ export const authOptions:NextAuthOptions ={
         async jwt({ token, user}) {
             
             if(user){
-                console.log(user);
+                //console.log(user);
                 token.username = user.username;
                 token.email = user.email
-                token._id = user._id;
+                
             }
             
             
@@ -71,7 +77,7 @@ export const authOptions:NextAuthOptions ={
         },
         async session({ session,  token }) {
             
-            session.user._id = token._id
+            session.user._id = token.sub
             session.user.username = token.username
             session.user.email = token.email
             
@@ -86,7 +92,7 @@ export const authOptions:NextAuthOptions ={
         strategy:"jwt"
     },
     pages:{
-        signIn:"/sign-in"
+        signIn:'/sign-in',
+        
     }
-    
 }
