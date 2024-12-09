@@ -8,7 +8,11 @@ const SignOut = () => {
     const {toast} = useToast();
     const session = useSession();
     const router = useRouter();
+
     
+    if(!session.data || !session.data.user){
+        router.replace('/sign-in')
+    }
 
     React.useEffect(()=>{
         function signOutFunc(){
@@ -19,15 +23,14 @@ const SignOut = () => {
             })
             
         }
-        signOutFunc();
+        if(session.data && session.data.user){
+            signOutFunc();
+        }
+        
         
     },[])
 
-    React.useEffect(()=>{
-        if(!session.data?.user){
-            router.replace('/sign-in')
-        }
-    },[session])
+    
 
     
     

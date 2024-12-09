@@ -16,9 +16,9 @@ export default function RootLayout({
       
       <AuthProvider>
       <body>
-        <NavPageComponent>
+          
           {children}
-        </NavPageComponent>
+        
         <Toaster/>
       </body>
       </AuthProvider>

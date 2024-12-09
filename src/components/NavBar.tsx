@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 const NavBar = ({children}:{children:React.ReactNode}) => {
   return (
-    <div className="flex justify-between p-2 items-center">
+    <div className="flex justify-between items-center">
         {children}
 
     </div>

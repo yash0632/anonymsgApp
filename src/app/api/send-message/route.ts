@@ -1,6 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel, { Message } from "@/model/User";
-import { sendMessageSchema,messageSchema } from "@/schemas/message_schema";
+import { sendMessageSchema } from "@/schemas/message_schema";
 
 
 
@@ -9,24 +9,25 @@ export async function POST(request:Request){
 
     try{    
         const body = await request.json();
+        console.log(body);
         const sendMessageSchemaResponse = sendMessageSchema.safeParse(body);
         if(!sendMessageSchemaResponse.success){
+            console.log(sendMessageSchemaResponse.error.issues)
             return Response.json({
                 Success:false,
-                Error:'Wrong Inputs are sent',
-                ErrorMessage:sendMessageSchemaResponse.error.message
+                Message:sendMessageSchemaResponse.error.issues[0].message
             },{status:400})
         }
 
         const {username,messageBody} = sendMessageSchemaResponse.data;
-        dbConnect();
+        await dbConnect();
         const user = await UserModel.findOne({username});
 
 
         if(!user){
             return Response.json({
                 Success:false,
-                Error:"Username is not present in database"
+                Message:"Username is not present in database"
             },{status:404})
         }
 
@@ -34,7 +35,7 @@ export async function POST(request:Request){
         if(isAcceptingMessage == false){
             return Response.json({
                 Success:false,
-                Error:`User with ${username} is not accepting Messages!`
+                Message:`User with Username ${username} is not accepting Messages!`
             },{status:409})
         }
 
@@ -49,14 +50,14 @@ export async function POST(request:Request){
 
 
         return Response.json({
-            success:true,
+            Success:true,
             Message:`Message is sent to ${username}`
         },{status:200})
     }
     catch(err){
         return Response.json({
             Success:false,
-            Error:"Internal Server Error"
+            Message:"Internal Server Error"
         },{status:500});
     }
     
