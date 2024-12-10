@@ -10,25 +10,29 @@ const SignOut = () => {
     const router = useRouter();
 
     
-    if(!session.data || !session.data.user){
-        router.replace('/sign-in')
-    }
-
     React.useEffect(()=>{
-        function signOutFunc(){
+        if(session.status != "loading"){
+              if(session.data){
+                function signOutFunc(){
             
-            signOut().then((res)=>{
-                console.log(res);
-                toast({title:"signed Out Successfully"})
-            })
+                  signOut().then((res)=>{
+                        console.log(res);
+                        toast({title:"signed Out Successfully"})
+                        router.replace('/sign-in')
+                    })
+                    
+                }
+                signOutFunc();
+              }
+              else{
+                router.replace('/sign-in')
+              }
+                
             
         }
-        if(session.data && session.data.user){
-            signOutFunc();
-        }
-        
-        
-    },[])
+    },[session])
+
+    
 
     
 

@@ -7,27 +7,45 @@ import mongoose from 'mongoose'
 
 export async function GET(){
     try{
+        
         const session = await getServerSession(authOptions);
+        
         if(!session || !session.user){
             return Response.json({
                 Success:true,
-                Error:"User is Not Authenticated"
+                Message:"User is Not Authenticated"
             },{
                 status:401
             })
         }
 
+        
+        let userId = null
+        if(mongoose.isValidObjectId(session.user._id)){
+            userId = new mongoose.Types.ObjectId(session.user._id)
+            
+        }
+        else{
+            throw new Error()
+        }
+        
 
-        const userId = new mongoose.Types.ObjectId(session.user._id)
+        
+        
+        
+        
+        
 
-        const user = await UserModel.aggregate([
+        const user =await UserModel.aggregate([
             {
                 '$match':{
-                    _id:userId
+                    '_id':userId
                 }
             },
             {
-                '$unwind':'$messages'
+                '$unwind':{
+                    'path':'$messages'
+                }
             },
             {
                 '$sort':{
@@ -36,17 +54,20 @@ export async function GET(){
             },
             {
                 '$group':{
-                    _id:userId,
-                    messages:{
+                    '_id':userId,
+                    'messages':{
                         '$push':'$messages'
                     }
                 }
             }
 
         ]).exec();
+        
+        
+        
         if (!user || user.length === 0) {
             return Response.json(
-              { message: 'User not found', success: false },
+              { Message: 'No Messages', Success: false },
               { status: 404 }
             );
         }
@@ -55,13 +76,12 @@ export async function GET(){
         const userMessages = user[0].messages;
         return Response.json({
             Success:true,
-            Messages:userMessages
+            Message:userMessages
         },{status:200})
     }catch(err){
         return Response.json({
             Success:false,
-            Error:"Internal Server Error",
-            Message:"Error in getting Messages"
+            Message:"Internal Server Error"
         },{status:500})
     }
 }

@@ -12,8 +12,10 @@ const NavPageComponent = () => {
   const session = useSession();
 
   React.useEffect(() => {
-    if (!session.data || !session.data.user) {
-      router.replace("/sign-in");
+    if(session.status != "loading"){
+      if(!session.data || !session.data.user){
+        router.replace("/sign-in")
+      }
     }
   }, [session]);
 

@@ -19,6 +19,7 @@ import { useSession, signIn, signOut, getProviders } from "next-auth/react";
 
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from 'lucide-react';
 
 const SignInPage = () => {
   const [password, setPassword] = useState<string>();
@@ -30,10 +31,14 @@ const SignInPage = () => {
   const { toast } = useToast();
 
   React.useEffect(()=>{
-    if (session.data && session.data.user) {
-      router.replace(`/`);
+    if(session.status != "loading"){
+      if (session.data && session.data.user) {
+        router.replace(`/`);
+      }
     }
   },[session])
+
+  
 
   
   
@@ -71,6 +76,9 @@ const SignInPage = () => {
       .catch((err) => {
         console.log(err);
       });
+  }
+  if(session.status == "loading"){
+    return <Loader2 className="animate-spin"></Loader2>
   }
 
   return (
@@ -182,7 +190,10 @@ function PasswordCheckButton({
   }
 
   return (
-    <button onClick={changePasswordType}>
+    <button onClick={(e)=>{
+      e.preventDefault();
+      changePasswordType();
+    }}>
       {passwordType == "password" ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
