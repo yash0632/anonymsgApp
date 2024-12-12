@@ -30,7 +30,7 @@ const NavPageComponent2 = () => {
 
         <div className='max-h-fit p-2'>
             <NavBar>
-                <NavBarItems linkValue='/' value='Home'/>
+                <NavBarItems linkValue='/dashboard' value='Home'/>
                 <Button onClick={()=>{
                     if(isSignedIn){
                         router.replace('/sign-out');

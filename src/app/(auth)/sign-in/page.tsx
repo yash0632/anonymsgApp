@@ -33,7 +33,7 @@ const SignInPage = () => {
   React.useEffect(()=>{
     if(session.status != "loading"){
       if (session.data && session.data.user) {
-        router.replace(`/`);
+        router.replace(`/dashboard`);
       }
     }
   },[session])

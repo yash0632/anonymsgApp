@@ -23,7 +23,7 @@ const NavPageComponent = () => {
     
       <div className='max-h-fit p-2'>
         <NavBar>
-          <NavBarItems linkValue="sign-up" value="SignUp"></NavBarItems>
+          <NavBarItems linkValue="dashboard" value="Home"></NavBarItems>
           <Button
             onClick={() => {
               router.replace("/sign-out");

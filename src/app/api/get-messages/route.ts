@@ -9,7 +9,7 @@ export async function GET(){
     try{
         
         const session = await getServerSession(authOptions);
-        
+        console.log(session);
         if(!session || !session.user){
             return Response.json({
                 Success:true,
@@ -26,10 +26,11 @@ export async function GET(){
             
         }
         else{
+            
             throw new Error()
         }
         
-
+        
         
         
         
@@ -79,6 +80,7 @@ export async function GET(){
             Message:userMessages
         },{status:200})
     }catch(err){
+        
         return Response.json({
             Success:false,
             Message:"Internal Server Error! Please try again later"

@@ -19,7 +19,7 @@ const SignOut = () => {
                         console.log(res);
                         toast({title:"signed Out Successfully"})
                         router.replace('/sign-in')
-                    })
+                  })
                     
                 }
                 signOutFunc();

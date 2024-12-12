@@ -14,16 +14,19 @@ export async function POST(req:Request){
             topP:0.9
         })
         
-        const generatedQuestions = result.toTextStreamResponse();
+        const generatedQuestions = result.toDataStreamResponse()
 
         // Log or return only the questions
-        console.log(generatedQuestions);
-        return generatedQuestions;
+        
+        
+
+        return generatedQuestions
         
     }
     catch(error){
+        error = error as Error
         return Response.json({
-            error:error
+            Error:error
         },{status:401});
     }
     
