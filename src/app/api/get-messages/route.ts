@@ -81,7 +81,7 @@ export async function GET(){
     }catch(err){
         return Response.json({
             Success:false,
-            Message:"Internal Server Error"
+            Message:"Internal Server Error! Please try again later"
         },{status:500})
     }
 }

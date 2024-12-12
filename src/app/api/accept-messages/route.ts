@@ -10,7 +10,7 @@ export async function GET(){
         if(!session || !session.user){
             return Response.json({
                 Success:false,
-                Error:'User is not Authenticated'
+                Message:'User is not Authenticated'
             },{status:401})
         }
 
@@ -21,7 +21,7 @@ export async function GET(){
         if(!user){
             return Response.json({
                 Success:false,
-                Error:'User is not Present in Database'
+                Message:'User is not Present in Database'
             },{status:401})
         }
         const {isAcceptingMessage} = user;
@@ -35,7 +35,7 @@ export async function GET(){
     catch(err){
         return Response.json({
             Success:false,
-            Error:"Internal Server Error",
+            Error:"Internal Server Error!",
             Message:"Error in getting Accept-Message Status"
         },{status:400})
     }
@@ -49,8 +49,7 @@ export async function POST(request:Request){
         if(!acceptMessageSchemaResponse.success){
             return Response.json({
                 Success:false,
-                Error:"Input is not Correctly Defined",
-                Message:acceptMessageSchemaResponse.error.message
+                Message:acceptMessageSchemaResponse.error.issues[0].message
             })
         }
 
@@ -61,7 +60,7 @@ export async function POST(request:Request){
             if(!session || !session.user){
                 return Response.json({
                     Success:false,
-                    Error:'User is not Authenticated'
+                    Message:'User is not Authenticated'
                 },{status:401})
             }
         }
@@ -71,7 +70,7 @@ export async function POST(request:Request){
         if(!userId){
             return Response.json({
                 Success:false,
-                Error:'User is not Authenticated'
+                Message:'User is not Authenticated'
             },{status:401})
         }
 
@@ -79,10 +78,10 @@ export async function POST(request:Request){
         if(!user){
             return Response.json({
                 Success:false,
-                Error:'User is not Present in Database'
+                Message:'User is not Present in Database'
             },{status:401})
         }
-
+        
         return Response.json({
             Success:true,
             Message:"Message acceptance status Updated Successfully"
@@ -92,7 +91,7 @@ export async function POST(request:Request){
         return Response.json({
             Success:false,
             Error:"Internal Server Error",
-            Message:"Error in getting Accept-Message Status"
+            Message:"Error in Updating Accept-Message Status"
         },{status:400})
     }
 }
